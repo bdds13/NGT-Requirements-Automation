@@ -23,8 +23,24 @@ if ($userIn -eq "1"){
     }
     elseif ($fireOutput -notlike '*5986*' -and $fireOutput -like "*23578*"){
        Write-Host "Port 5986 is not open"
+       $addWinRM = Read-Host -Prompt "Would you like to add a rule to allow WinRM over HTTPS (5986)? (yes/no)"
+       if ($addWinRM -eq "yes"){
+       netsh advfirewall firewall add rule name="WinRM-HTTPS" dir=in localport=5986 protocol=TCP action=allow
+       Get-NetFirewallPortFilter | Select-Object LocalPort | Select-String -Pattern "(5986)|(23578)"
+       }
+       else {
+        exit
+       }
     }
     elseif ($fireOutput -like '*5986*' -and $fireOutput -notlike "*23578*"){
        Write-Host "Port 23578 is not open"
+       $addIPC = Read-host -Prompt "Would you like to add a rule to allow IPC (23578)? (yes/no)"
+       if ($addIPC -eq "yes"){
+       netsh advfirewall firewall add rule name="Nutanix-IPC" dir=in localport=23578 protocol=TCP action=allow
+       Get-NetFirewallPortFilter | Select-Object LocalPort | Select-String -Pattern "(5986)|(23578)"
+       }
+       else {
+        exit
+       }
     }
 }
